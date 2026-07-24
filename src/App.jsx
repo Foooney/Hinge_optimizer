@@ -872,7 +872,7 @@ ${myProfile.criteres && myProfile.criteres.trim() ? myProfile.criteres : "Non pr
 - Ne minimise jamais les red flags, même subtils.
 - Si certains éléments sont invisibles faute de captures (peu de photos, pas de prompts, bio vide...), précise ce qui manque dans "elements_manquants" plutôt que de l'inventer.
 - Tiens compte de mon profil (bio, critères, éventuelles photos) pour estimer la compatibilité et la probabilité de match.
-- Reste concis dans chaque champ texte (1 à 2 phrases maximum par item) : je préfère un rapport complet et précis à un rapport verbeux.
+- IMPORTANT — sois TRÈS bref dans chaque champ texte : une phrase courte (10-15 mots), jamais un paragraphe. La rapidité de génération dépend directement de la brièveté. Un rapport court et précis vaut mieux qu'un rapport long.
 
 Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ni après, sans balises markdown, avec exactement cette structure :
 {
@@ -891,8 +891,8 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ni après, sans 
     "ou_ca_matche": "où ça matcherait entre nous, concrètement",
     "ou_ca_coince": "où ça pourrait coincer, concrètement"
   },
-  "green_flags": ["signe de maturité, authenticité, curiosité, cohérence, stabilité ou capacité à construire une relation — un par élément"],
-  "red_flags": ["signe même subtil : validation extérieure, Instagram trop mis en avant, lifestyle très festif, manque d'investissement, contradictions, besoin d'attention, évitement émotionnel, profil vide, photos trop travaillées, etc. — un par élément, tableau vide si vraiment aucun"],
+  "green_flags": ["signe positif, en 5-8 mots — maximum 4 éléments"],
+  "red_flags": ["signe même subtil, en 5-8 mots — maximum 4 éléments, tableau vide si vraiment aucun"],
   "potentiel_relationnel": {
     "type": "partenaire_potentielle" ou "aventure" ou "probablement_indisponible" ou "juste_des_matchs" ou "tres_compatible",
     "explication": "pourquoi ce type de potentiel"
@@ -914,8 +914,8 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ni après, sans 
   },
   "elements_manquants": "ce qui manque pour juger pleinement (chaîne vide si rien ne manque)",
   "premier_message": {
-    "francais": ["5 accroches en français"],
-    "anglais": ["5 accroches en anglais — UNIQUEMENT si le profil semble anglophone, sinon tableau vide"]
+    "francais": ["3 accroches courtes en français"],
+    "anglais": ["3 accroches courtes en anglais — UNIQUEMENT si le profil semble anglophone, sinon tableau vide"]
   }
 }
 
@@ -961,7 +961,7 @@ Pour "premier_message" : style cocky & funny, intelligent, léger, joueur, taqui
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: MODEL,
-          max_tokens: 6000,
+          max_tokens: 2200,
           messages: [{ role: "user", content }],
         }),
       });
