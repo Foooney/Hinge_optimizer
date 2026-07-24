@@ -961,7 +961,7 @@ Pour "premier_message" : style cocky & funny, intelligent, léger, joueur, taqui
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: MODEL,
-          max_tokens: 4000,
+          max_tokens: 6000,
           messages: [{ role: "user", content }],
         }),
       });
@@ -982,8 +982,11 @@ Pour "premier_message" : style cocky & funny, intelligent, léger, joueur, taqui
       const jsonSlice = extractJsonObject(rawText);
 
       if (!jsonSlice) {
+        const truncated = data.stop_reason === "max_tokens";
         setError(
-          "La réponse n'a pas pu être lue comme du JSON. Cela arrive surtout quand la réponse est coupée avant la fin — réessaie, en réduisant si possible le nombre de captures."
+          truncated
+            ? "La réponse a été coupée avant la fin (limite de longueur atteinte). Réessaie — la limite a été augmentée."
+            : "La réponse n'a pas pu être lue comme du JSON. Réessaie, en réduisant si possible le nombre de captures."
         );
         setDebugRaw(rawText || "(réponse vide)");
         setAnalyzing(false);

@@ -5,91 +5,88 @@ compatibilité, recommandation, accroches. Toi seul décides de liker ou non.
 
 Ceci est la version **autonome** de l'app (hors Claude.ai) : elle tourne sur
 ton propre hébergement, avec ta propre clé API Anthropic. Ta clé reste
-toujours côté serveur (dans `api/analyze.js`) — jamais visible dans le
-navigateur.
+toujours côté serveur — jamais visible dans le navigateur.
+
+**Aucune ligne de commande n'est nécessaire.** Tout se fait par clics, avec
+GitHub Desktop, GitHub.com et Vercel.com.
 
 ---
 
-## 1. Récupérer une clé API Anthropic
+## Étape 1 — Récupérer une clé API Anthropic
 
-1. Va sur **[console.anthropic.com](https://console.anthropic.com)** et connecte-toi (ou crée un compte — distinct de ton compte Claude.ai).
-2. **Settings → API Keys → Create Key**. Copie la clé (elle commence par `sk-ant-...`), tu ne pourras plus la revoir ensuite. nnement, tu paies uniquement les tokens utilisés.
+1. Va sur **[console.anthropic.com](https://console.anthropic.com)** et connecte-toi (ou crée un compte — c'est différent de ton compte Claude.ai, même si l'email peut être le même).
+2. Dans le menu de gauche, clique **Settings**, puis **API Keys**.
+3. Clique **Create Key**. Donne-lui un nom (ex : "hinge-optimizer"), valide.
+4. Une clé apparaît, du genre `sk-ant-api03-xxxxxxxxx...`. **Copie-la tout de suite** dans une note sur ton téléphone ou ordinateur — elle ne sera plus jamais réaffichée en entier.
+5. Toujours dans Settings, va dans **Billing**, ajoute une carte, et achète un crédit (5$ suffit pour commencer). Pas d'abonnement : tu paies uniquement ce que tu utilises.
 
-Garde cette clé pour l'étape 3. Ne la mets jamais dans un fichier commité sur GitHub.
+## Étape 2 — Récupérer les fichiers du projet
 
-## 2. Mettre le code sur GitHub
+1. Télécharge le fichier `hinge-optimizer-app.zip` que je t'ai donné (bouton de téléchargement dans la conversation).
+2. Trouve-le dans ton dossier **Téléchargements**.
+3. Fais un clic droit dessus → **Extraire tout** (Windows) ou double-clique dessus (Mac) pour le décompresser.
+4. Tu obtiens un dossier `hinge-optimizer-app` contenant plusieurs fichiers et sous-dossiers (`src`, `api`, `public`...). Garde cet endroit en tête, tu en auras besoin à l'étape 4.
 
-```bash
-cd hinge-optimizer-app
-git init
-git add .
-git commit -m "Hinge Optimizer"
-```
+## Étape 3 — Installer GitHub Desktop et créer un compte GitHub
 
-Crée un nouveau repo (vide) sur GitHub, puis :
+GitHub est là où le code va être rangé ; Vercel ira le chercher là pour le mettre en ligne.
 
-```bash
-git remote add origin https://github.com/TON_COMPTE/hinge-optimizer.git
-git branch -M main
-git push -u origin main
-```
+1. Si tu n'as pas de compte GitHub, crée-en un gratuitement sur **[github.com](https://github.com)** (bouton "Sign up").
+2. Télécharge **GitHub Desktop** : **[desktop.github.com](https://desktop.github.com)** → installe-le comme n'importe quel logiciel.
+3. Ouvre GitHub Desktop, clique **Sign in to GitHub.com**, connecte-toi avec le compte créé à l'étape précédente.
 
-## 3. Déployer
+## Étape 4 — Mettre le projet sur GitHub (toujours sans ligne de commande)
 
-### Option A — Vercel (recommandé)
+1. Dans GitHub Desktop, menu **File → Add local repository**.
+2. Clique **Choose...** et sélectionne le dossier `hinge-optimizer-app` décompressé à l'étape 2.
+3. GitHub Desktop va dire que ce dossier n'est pas encore un "repository" et proposer un bouton **create a repository**. Clique dessus.
+4. Une fenêtre de création apparaît : laisse tout par défaut, clique **Create Repository**.
+5. En haut à droite de GitHub Desktop, un bouton **Publish repository** apparaît. Clique dessus.
+6. Décoche **"Keep this code private"** seulement si ça ne te dérange pas que le code soit public (le code ne contient aucune donnée personnelle ni ta clé API — celle-ci n'est jamais dans les fichiers). Sinon laisse coché pour rester privé. Clique **Publish Repository**.
 
-1. Sur [vercel.com](https://vercel.com) → **Add New → Project** → importe ton repo GitHub.
-2. Vercel détecte Vite automatiquement. Ne change rien aux réglages de build.
-3. Avant de cliquer "Deploy", ouvre **Environment Variables** et ajoute :
-   - `ANTHROPIC_API_KEY` = ta clé de l'étape 1
-4. Clique **Deploy**. Au bout d'une minute, tu as une URL du type `hinge-optimizer.vercel.app`.
+Ton code est maintenant sur GitHub, dans un repository nommé `hinge-optimizer-app`.
 
-### Option B — Netlify
+## Étape 5 — Déployer sur Vercel
 
-1. Sur [app.netlify.com](https://app.netlify.com) → **Add new site → Import an existing project** → ton repo GitHub.
-2. Build command et publish directory sont déjà définis dans `netlify.toml`, rien à changer.
-3. **Site settings → Environment variables** → ajoute `ANTHROPIC_API_KEY`.
-4. Déploie.
+1. Va sur **[vercel.com](https://vercel.com)**, clique **Sign Up**, puis choisis **Continue with GitHub** (le plus simple, ça relie directement les deux comptes).
+2. Une fois connecté, clique **Add New...** (en haut à droite) → **Project**.
+3. Dans la liste des repositories GitHub, trouve **hinge-optimizer-app** et clique **Import** à côté.
+   - S'il n'apparaît pas dans la liste, clique sur **"Adjust GitHub App Permissions"**, autorise Vercel à accéder à ce repository, puis reviens.
+4. Vercel affiche un écran de configuration. Il détecte automatiquement **"Vite"** comme framework — ne touche à rien dans cette partie.
+5. **Étape importante** : juste en dessous, clique pour déplier **Environment Variables**. Ajoute :
+   - **Name** : `ANTHROPIC_API_KEY`
+   - **Value** : colle la clé `sk-ant-...` récupérée à l'étape 1
+   - Clique **Add**.
+6. Clique le gros bouton **Deploy**.
+7. Attends environ une minute. Un écran "Congratulations" apparaît avec une capture d'écran de ton app et un bouton pour visiter l'URL (du type `hinge-optimizer-app.vercel.app`).
 
-Les deux options fonctionnent avec le même code — `netlify.toml` redirige `/api/analyze` vers l'équivalent Netlify Functions.
+## Étape 6 — Tester dans un navigateur
 
-## 4. Installer l'app sur ton S24 Ultra
+1. Clique **Visit** (ou copie l'URL affichée).
+2. L'app doit s'afficher. Renseigne rapidement ton profil pour vérifier que "Enregistrer" fonctionne.
 
-1. Ouvre l'URL de ton déploiement dans **Chrome** sur ton téléphone.
-2. Menu (⋮) → **Ajouter à l'écran d'accueil** (ou une bannière d'installation apparaît automatiquement après quelques secondes).
-3. L'icône s'installe comme une vraie app : elle s'ouvre en plein écran, sans barre d'adresse Chrome, et le sélecteur de photos fonctionne normalement (plus de restriction WebView, puisque ce n'est plus un artifact intégré).
+## Étape 7 — Installer sur ton S24 Ultra
 
-## Développement local (optionnel)
+1. Ouvre cette même URL Vercel dans **Chrome** sur ton téléphone.
+2. Une bannière **"Ajouter à l'écran d'accueil" / "Installer l'application"** apparaît généralement en bas — accepte-la.
+   - Sinon : menu **⋮** (trois points en haut à droite) → **Ajouter à l'écran d'accueil** → **Ajouter**.
+3. Une icône apparaît sur ton écran d'accueil, comme une vraie app. Ouvre-la depuis là (pas depuis Chrome) : elle s'affiche en plein écran, sans barre d'adresse, et le bouton "+ Ajouter une image" fonctionne normalement.
 
-```bash
-npm install
-npm run dev
-```
-
-La fonction serveur (`/api/analyze`) n'est pas servie par `vite dev` seul. Pour tester en local avec la fonction serveur incluse, utilise la CLI de ton hébergeur :
-
-```bash
-npm install -g vercel
-vercel dev
-```
-
-ou pour Netlify :
-
-```bash
-npm install -g netlify-cli
-netlify dev
-```
-
-Crée un fichier `.env` (copie de `.env.example`) avec ta clé pour ces commandes.
+---
 
 ## Mettre à jour l'app plus tard
 
-Toute modification → `git add . && git commit -m "..." && git push`. Vercel et
-Netlify redéploient automatiquement à chaque push sur `main`.
+Si je te redonne des fichiers modifiés :
+1. Remplace les fichiers correspondants dans ton dossier `hinge-optimizer-app` local.
+2. Dans GitHub Desktop, les changements apparaissent automatiquement dans la liste à gauche.
+3. En bas à gauche, écris une courte description (ex : "mise à jour"), clique **Commit to main**.
+4. Clique **Push origin** en haut.
+5. Vercel redéploie tout seul en moins d'une minute — pas besoin de retoucher à Vercel.
 
 ## Notes
 
 - **Coût** : facturé à l'usage sur ta clé API Anthropic (pas d'abonnement). Une
-  analyse complète coûte quelques centimes. Voir [la page tarifs Anthropic](https://docs.claude.com/en/docs/about-claude/pricing) pour les tarifs à jour.
-- **Confidentialité** : tes données (profil, critères, historique) sont stockées uniquement dans le stockage local de ton navigateur/téléphone (`localStorage`), pas sur un serveur.
+  analyse complète coûte quelques centimes. Suis ta consommation dans
+  console.anthropic.com → **Usage**. Tarifs à jour sur [docs.claude.com](https://docs.claude.com/en/docs/about-claude/pricing).
+- **Confidentialité** : tes données (profil, critères, historique) restent uniquement dans le stockage local de ton navigateur/téléphone, pas sur un serveur.
 - Ce projet n'est ni affilié ni approuvé par Hinge ou Match Group.
