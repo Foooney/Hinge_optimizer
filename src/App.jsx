@@ -24,6 +24,27 @@ const COLORS = {
   cream: "#FAF9F6",
 };
 
+function requestNotificationPermission() {
+  if (typeof Notification === "undefined") return;
+  if (Notification.permission === "default") {
+    Notification.requestPermission().catch(() => {});
+  }
+}
+
+async function notify(title, body) {
+  try {
+    if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+    if (navigator.serviceWorker) {
+      const reg = await navigator.serviceWorker.ready;
+      reg.showNotification(title, { body, icon: "/icon-192.png", badge: "/icon-192.png" });
+    } else {
+      new Notification(title, { body, icon: "/icon-192.png" });
+    }
+  } catch (e) {
+    // Les notifications sont un plus, jamais bloquantes pour le reste de l'app.
+  }
+}
+
 function extractJsonObject(text) {
   if (!text) return null;
   const start = text.indexOf("{");
@@ -848,6 +869,7 @@ export default function HingeOptimizer() {
       setError("Ajoute au moins une capture d'écran du profil à analyser.");
       return;
     }
+    requestNotificationPermission();
     setAnalyzing(true);
     setError(null);
     setResult(null);
@@ -970,6 +992,7 @@ Pour "premier_message" : style cocky & funny, intelligent, léger, joueur, taqui
       if (data.error) {
         setError(`Erreur API : ${data.error.message || "requête refusée"}.`);
         setDebugRaw(JSON.stringify(data, null, 2));
+        notify("Analyse échouée", data.error.message || "Erreur API");
         setAnalyzing(false);
         return;
       }
@@ -983,12 +1006,12 @@ Pour "premier_message" : style cocky & funny, intelligent, léger, joueur, taqui
 
       if (!jsonSlice) {
         const truncated = data.stop_reason === "max_tokens";
-        setError(
-          truncated
-            ? "La réponse a été coupée avant la fin (limite de longueur atteinte). Réessaie — la limite a été augmentée."
-            : "La réponse n'a pas pu être lue comme du JSON. Réessaie, en réduisant si possible le nombre de captures."
-        );
+        const msg = truncated
+          ? "La réponse a été coupée avant la fin (limite de longueur atteinte). Réessaie — la limite a été augmentée."
+          : "La réponse n'a pas pu être lue comme du JSON. Réessaie, en réduisant si possible le nombre de captures.";
+        setError(msg);
         setDebugRaw(rawText || "(réponse vide)");
+        notify("Analyse échouée", msg);
         setAnalyzing(false);
         return;
       }
@@ -997,13 +1020,17 @@ Pour "premier_message" : style cocky & funny, intelligent, léger, joueur, taqui
 
       setResult(parsed);
       setDebugRaw(null);
+      const verdictLabel = { match: "Match", mitige: "À considérer", pass: "Pass" }[
+        REPONSE_MAP[parsed?.je_likerais?.reponse] || "mitige"
+      ];
+      notify("Analyse terminée", `${parsed.prenom || "Profil"} — ${verdictLabel}`);
       const entry = { id: Date.now(), ts: new Date().toISOString(), ...parsed };
       await persistHistory([entry, ...history]);
       setImages([]);
     } catch (e) {
-      setError(
-        `L'analyse a échoué (${e && e.message ? e.message : "réponse illisible ou erreur réseau"}). Tu peux réessayer.`
-      );
+      const msg = `L'analyse a échoué (${e && e.message ? e.message : "réponse illisible ou erreur réseau"}). Tu peux réessayer.`;
+      setError(msg);
+      notify("Analyse échouée", msg);
     } finally {
       setAnalyzing(false);
     }

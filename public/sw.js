@@ -13,6 +13,18 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if ("focus" in client) return client.focus();
+      }
+      if (clients.openWindow) return clients.openWindow("/");
+    })
+  );
+});
+
 // Stratégie simple : réseau d'abord, cache en secours (utile hors-ligne pour
 // l'app shell ; les appels à /api/analyze nécessitent toujours une connexion).
 self.addEventListener("fetch", (event) => {
