@@ -884,7 +884,7 @@ ${myProfile.criteres && myProfile.criteres.trim() ? myProfile.criteres : "Non pr
 - Ne minimise jamais les red flags, même subtils.
 - Si certains éléments sont invisibles faute de captures (peu de photos, pas de prompts, bio vide...), précise ce qui manque dans "elements_manquants" plutôt que de l'inventer.
 - Tiens compte de mon profil (bio, critères, éventuelles photos) pour estimer la compatibilité et la probabilité de match.
-- IMPORTANT — sois TRÈS bref dans chaque champ texte : une phrase courte (10-15 mots), jamais un paragraphe. La rapidité de génération dépend directement de la brièveté. Un rapport court et précis vaut mieux qu'un rapport long.
+- RÈGLE STRICTE DE LONGUEUR, à respecter sans exception : chaque champ texte fait 12 MOTS MAXIMUM. Style télégraphique, pas de phrase complète sujet-verbe-complément. Exemple de ce qui est attendu : "Style casual-chic, sobre" (correct) au lieu de "Son style vestimentaire est plutôt casual-chic et reste sobre sans excès" (trop long, INTERDIT). Coupe les mots inutiles (articles, liaisons) sans perdre le sens.
 
 Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ni après, sans balises markdown, avec exactement cette structure :
 {
@@ -975,7 +975,7 @@ Pour "premier_message" : style cocky & funny, intelligent, léger, joueur, taqui
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: MODEL,
-          max_tokens: 3500,
+          max_tokens: 5000,
           messages: [{ role: "user", content }],
         }),
       });
