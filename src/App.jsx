@@ -652,51 +652,41 @@ function ResultReport({ result }) {
 
       {result.premier_message && (
         <Accordion title="10 · Premier message" defaultOpen>
-          {result.premier_message.francais && result.premier_message.francais.length > 0 && (
-            <div
-              style={{
-                marginBottom:
-                  result.premier_message.anglais && result.premier_message.anglais.length ? 14 : 0,
-              }}
-            >
-              <div
-                style={{
-                  fontFamily: "Plus Jakarta Sans, sans-serif",
-                  fontSize: 11.5,
-                  fontWeight: 700,
-                  color: COLORS.muted,
-                  marginBottom: 6,
-                }}
-              >
-                Français
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {result.premier_message.francais.map((a, i) => (
-                  <OpenerLine key={i} text={a} onCopy={() => copy(a, `fr-${i}`)} copied={copiedKey === `fr-${i}`} />
-                ))}
-              </div>
-            </div>
-          )}
-          {result.premier_message.anglais && result.premier_message.anglais.length > 0 && (
-            <div>
-              <div
-                style={{
-                  fontFamily: "Plus Jakarta Sans, sans-serif",
-                  fontSize: 11.5,
-                  fontWeight: 700,
-                  color: COLORS.muted,
-                  marginBottom: 6,
-                }}
-              >
-                English
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {result.premier_message.anglais.map((a, i) => (
-                  <OpenerLine key={i} text={a} onCopy={() => copy(a, `en-${i}`)} copied={copiedKey === `en-${i}`} />
-                ))}
-              </div>
-            </div>
-          )}
+          {(() => {
+            // Nouveau format : une seule liste dans la langue détectée.
+            // Ancien format (avant la détection de langue) : deux listes séparées — gardé en fallback.
+            const accroches =
+              result.premier_message.accroches ||
+              [...(result.premier_message.francais || []), ...(result.premier_message.anglais || [])];
+            const langueLabel =
+              result.langue_profil === "anglais"
+                ? "English"
+                : result.langue_profil === "francais"
+                ? "Français"
+                : null;
+            return (
+              <>
+                {langueLabel && (
+                  <div
+                    style={{
+                      fontFamily: "Plus Jakarta Sans, sans-serif",
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      color: COLORS.muted,
+                      marginBottom: 6,
+                    }}
+                  >
+                    {langueLabel} — profil détecté
+                  </div>
+                )}
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {accroches.map((a, i) => (
+                    <OpenerLine key={i} text={a} onCopy={() => copy(a, `op-${i}`)} copied={copiedKey === `op-${i}`} />
+                  ))}
+                </div>
+              </>
+            );
+          })()}
         </Accordion>
       )}
     </div>
@@ -935,11 +925,13 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans texte avant ni après, sans 
     "note_globale": nombre /10, moyenne pondérée réfléchie des quatre notes ci-dessus
   },
   "elements_manquants": "ce qui manque pour juger pleinement (chaîne vide si rien ne manque)",
+  "langue_profil": "francais" ou "anglais",
   "premier_message": {
-    "francais": ["3 accroches courtes en français"],
-    "anglais": ["3 accroches courtes en anglais — UNIQUEMENT si le profil semble anglophone, sinon tableau vide"]
+    "accroches": ["3 accroches courtes, dans la langue détectée du profil (langue_profil)"]
   }
 }
+
+Détection de langue : regarde la bio et les réponses aux prompts dans les captures. Si elles sont rédigées en anglais, "langue_profil" = "anglais" et les accroches doivent être en anglais. Sinon "francais" et les accroches en français. En cas de profil bilingue ou ambigu, utilise la langue majoritaire du texte.
 
 Grille de décision pour "je_likerais.reponse" (à appliquer strictement à partir de "notes_finales.note_globale") :
 - note globale < 7,5/10 → "non"
