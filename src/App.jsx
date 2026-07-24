@@ -961,7 +961,7 @@ Pour "premier_message" : style cocky & funny, intelligent, léger, joueur, taqui
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: MODEL,
-          max_tokens: 2200,
+          max_tokens: 3500,
           messages: [{ role: "user", content }],
         }),
       });
